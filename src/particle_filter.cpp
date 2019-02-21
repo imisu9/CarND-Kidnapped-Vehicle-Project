@@ -35,18 +35,18 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   num_particles = 100;  // TODO: Set the number of particles
   std::default_random_engine gen;
   
-  // define Gaussian distribution (=normal distribution) for each particles sensor noise
-  normal_distribution<double> X_gaussian_init(0, std[0]);
-  normal_distribution<double> Y_gaussian_init(0, std[1]);
-  normal_distribution<double> Theta_gaussian_init(0, std[2]);
+  // these lines create a normal (Gaussian) distribution for x, y, and theta
+  normal_distribution<double> X_gaussian_init(x, std[0]);
+  normal_distribution<double> Y_gaussian_init(y, std[1]);
+  normal_distribution<double> Theta_gaussian_init(theta, std[2]);
   
   // init particles
   for (int i = 0; i < num_particles; ++i) {
     Particle p;
     p.id = i;
-    p.x = x + X_gaussian_inint(gen);
-    p.y = y + Y_gaussian_inint(gen);
-    p.theta = theta + Theta_gaussian_inint(gen);
+    p.x = X_gaussian_inint(gen);
+    p.y = Y_gaussian_inint(gen);
+    p.theta = Theta_gaussian_inint(gen);
     p.weight = 1.0;
     
     particles.push_back(p);
