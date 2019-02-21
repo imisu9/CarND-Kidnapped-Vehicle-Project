@@ -21,6 +21,8 @@
 using std::string;
 using std::vector;
 
+
+
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
    * TODO: Set the number of particles. Initialize all particles to 
@@ -30,8 +32,26 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 0;  // TODO: Set the number of particles
-
+  num_particles = 100;  // TODO: Set the number of particles
+  std::default_random_engine gen;
+  
+  // define Gaussian distribution (=normal distribution) for each particles sensor noise
+  normal_distribution<double> X_gaussian_init(0, std[0]);
+  normal_distribution<double> Y_gaussian_init(0, std[1]);
+  normal_distribution<double> Theta_gaussian_init(0, std[2]);
+  
+  // init particles
+  for (int i = 0; i < num_particles; ++i) {
+    Particle p;
+    p.id = i;
+    p.x = x + X_gaussian_inint(gen);
+    p.y = y + Y_gaussian_inint(gen);
+    p.theta = theta + Theta_gaussian_inint(gen);
+    p.weight = 1.0;
+    
+    particles.push_back(p);
+  }
+  is_initialized = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
