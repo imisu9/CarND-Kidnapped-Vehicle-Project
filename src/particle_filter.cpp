@@ -182,6 +182,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     }
     // update the weight of i th particle using a bivariate Gaussian distribution
     particles[i].weight = temp_weight;
+  }
 }
 
 void ParticleFilter::resample() {
