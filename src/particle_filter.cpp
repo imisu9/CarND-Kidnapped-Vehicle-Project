@@ -204,7 +204,7 @@ void ParticleFilter::resample() {
                                              return lhs.weight < rhs.weight;});
   int max_weight = minmax_weight.second->weight;
   double beta = 0;
-  std::uniform_int_distribution<double> Beta_unidist(0, max_weight);
+  std::uniform_real_distribution<double> Beta_unidist(0, max_weight);
   
   for (int i = 0; i < num_particles; ++i) {
     beta += Beta_unidist(gen) * 2;
