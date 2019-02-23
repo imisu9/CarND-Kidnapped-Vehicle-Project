@@ -15,6 +15,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <boost/bind.hpp>
 
 #include "helper_functions.h"
 
@@ -124,7 +125,63 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   and the following is a good resource for the actual equation to implement
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
-
+  for (int i = 0; i < num_particles; ++i) {
+    double pi_x = particles[i].x;
+    double pi_y = particles[i].y;
+    double pi_theta = particles[i].theta;
+    
+    // create a vector for predicted landmark locations complying to the MAP's coordinate system.
+    vector<LandmarkObs> predictions;
+    
+    for (int j = 0; j < map_landmarks.landmark_list.size(); ++j) {
+      float lmj_id = map_landmarks.landmark_list[j].id_i;
+      float lmj_x = map_landmarks.landmark_list[j].x_f;
+      float lmj_y = map_landmarks.landmark_list[j].y_f;
+      
+      // add j th landmark to predictions, 
+      // only if it is within the sensor range from i th particle.
+      if (dist(pi_x, lmj_x, pi_y, lmj_y) <= sensor_range) {
+        predictions.push_back(LandmarkObs{lmj_id, lmj_x, lmj_y});
+      }
+    }
+    
+    // create a vector for observations transformed 
+    // from the VEHICLE'S coordinate system to the MAP's coordinate system
+    // by both rotation and translation
+    vector<LandmarkObs> transformed_obs;
+    
+    for (int k = 0; k < observations.size(); ++k) {
+      int t_obs_id = observations[k].id;
+      double t_obs_x = observations[k].x * cos(pi_theta) - observations[k].y * sin(pi_theta) + pi_x;
+      double t_obs_y = observations[k].x * sin(pi_theta) + observations[k].y * cos(pi_theta) + pi_y;
+      
+      transformed_obs.push_back(LandmarkObs{t_obs_id, t_obs_x, t_obs_y});
+    }
+    
+    // run dataAssociation() to find which observations correspond to which landmarks
+    // (likely by using a nearest-neighbors data association).
+    dataAssociation(predictions, transformed_obs);
+    
+    // since we are 2-dimensional, it is bivariate case.
+    // the formular was taken from wikipeida at
+    // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
+    // (assuming correlation between x and y is zero)
+    double temp_weight = 1;
+    for (int l = 0; l < transfromed_obs.size(); ++l) {
+      double t_ob_x = transformed_obs[l].x;
+      double t_ob_y = transformed_obs[l].y;
+      vector<LandmarkObs>::iterator it = find(predictions.begin(), predictions.end(),
+                                              boost::bind(&LandmarkObs::id, _1) == transformed_obs[l].id);
+      double p_x = *it.x;
+      double p_y = *it.y;
+      
+      temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1]) * 
+                      exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) + 
+                                  pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
+                                  2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1]))));
+    }
+    // update the weight of i th particle using a bivariate Gaussian distribution
+    particles[i].weight = temp_weight;
 }
 
 void ParticleFilter::resample() {
