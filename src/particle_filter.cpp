@@ -200,7 +200,7 @@ void ParticleFilter::resample() {
   std::normal_distribution<int> Index_gaussian_init(0, num_particles-1);
   int index = Index_gaussian_init(gen);
   auto minmax_weight = std::minmax_element(particles.begin(), particles.end(),
-                                           [] (Particle const& lhs, Size const& rhs) {
+                                           [] (Particle const& lhs, Particle const& rhs) {
                                              return lhs.weight < rhs.weight;});
   int max_weight = minmax_weight.second->weight;
   double beta = 0;
