@@ -197,17 +197,17 @@ void ParticleFilter::resample() {
   std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution noise for x, y, and theta
-  std::normal_distribution<int> Index_gaussian_init(0, num_particles-1);
-  int index = Index_gaussian_init(gen);
+  std::uniform_int_distribution<int> Index_unidist(0, num_particles-1);
+  int index = Index_unidist(gen);
   auto minmax_weight = std::minmax_element(particles.begin(), particles.end(),
                                            [] (Particle const& lhs, Particle const& rhs) {
                                              return lhs.weight < rhs.weight;});
   int max_weight = minmax_weight.second->weight;
   double beta = 0;
-  std::normal_distribution<double> Beta_gaussian_init(0, max_weight);
+  std::uniform_int_distribution<double> Beta_unidist(0, max_weight);
   
   for (int i = 0; i < num_particles; ++i) {
-    beta += Beta_gaussian_init(gen) * 2;
+    beta += Beta_unidist(gen) * 2;
     while (beta > particles[index].weight) {
       beta -= particles[index].weight;
       index = (index + 1) % num_particles;
