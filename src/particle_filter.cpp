@@ -100,8 +100,8 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   during the updateWeights phase.
    */
   double min_dist = std::numeric_limits<double>::max();;
-  for (int i = 0; i < observations.size(); ++i) {
-    for (int j = 0; j < predicted.size(); ++j) {
+  for (unsigned i = 0; i < observations.size(); ++i) {
+    for (unsigned j = 0; j < predicted.size(); ++j) {
       double curr_dist = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
       if (curr_dist < min_dist) {
         min_dist = curr_dist;
@@ -135,8 +135,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // create a vector for predicted landmark locations complying to the MAP's coordinate system.
     vector<LandmarkObs> predictions;
     
-    for (int j = 0; j < map_landmarks.landmark_list.size(); ++j) {
-      float lmj_id = map_landmarks.landmark_list[j].id_i;
+    for (unsigned j = 0; j < map_landmarks.landmark_list.size(); ++j) {
+      int lmj_id = map_landmarks.landmark_list[j].id_i;
       float lmj_x = map_landmarks.landmark_list[j].x_f;
       float lmj_y = map_landmarks.landmark_list[j].y_f;
       
@@ -152,7 +152,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // by both rotation and translation
     vector<LandmarkObs> transformed_obs;
     
-    for (int k = 0; k < observations.size(); ++k) {
+    for (unsigned k = 0; k < observations.size(); ++k) {
       int t_obs_id = observations[k].id;
       double t_obs_x = observations[k].x * cos(pi_theta) - observations[k].y * sin(pi_theta) + pi_x;
       double t_obs_y = observations[k].x * sin(pi_theta) + observations[k].y * cos(pi_theta) + pi_y;
@@ -169,7 +169,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
     // (assuming correlation between x and y is zero)
     double temp_weight = 1;
-    for (int l = 0; l < transformed_obs.size(); ++l) {
+    for (unsigned l = 0; l < transformed_obs.size(); ++l) {
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
       int landmark_id = transformed_obs[l].id;
