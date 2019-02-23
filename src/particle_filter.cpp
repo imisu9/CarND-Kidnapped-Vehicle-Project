@@ -15,7 +15,6 @@
 #include <random>
 #include <string>
 #include <vector>
-#include <boost/bind.hpp>
 
 #include "helper_functions.h"
 
@@ -171,7 +170,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
       vector<LandmarkObs>::iterator it = std::find_if(predictions.begin(), predictions.end(),
-                                              boost::bind(&LandmarkObs::id, _1) == transformed_obs[l].id);
+                                                      [] (const &LandmarkObs lm_ob) {return lm_ob.id == transformed_obs[l].id;});
       double p_x = it->x;
       double p_y = it->y;
       
