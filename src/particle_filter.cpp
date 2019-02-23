@@ -71,18 +71,23 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
   std::normal_distribution<double> Theta_gaussian_init(0, std_pos[2]);
   
   for (int i = 0; i < num_particles; ++i) {
-    // calculate prediction for x
-    particles[i].x += (velocity/yaw_rate) * 
-                      (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta));
+    // calculate prediction
+    if (abs(yaw_rate) > 0.0) {
+      particles[i].x += (velocity/yaw_rate) * 
+        (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta));
+      particles[i].y += (velocity/yaw_rate) *
+        (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate*delta_t));
+      particles[i].theta += yaw_rate*delta_t;
+    }
+    else {
+      particles[i].x += velocity * delta_t * cos(particles[i].theta);
+      particles[i].y += velocity * delta_t * sin(particles[i].theta);
+    }
+
     // add noise
     particles[i].x += X_gaussian_init(gen);
-    // calculate prediction for y
-    particles[i].y += (velocity/yaw_rate) * 
-                      (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate*delta_t));
-    // add noise
     particles[i].y += Y_gaussian_init(gen);
-    // calculate prediction and noise for theta
-    particles[i].y += yaw_rate*delta_t + Theta_gaussian_init(gen);
+    particles[i].theta += Theta_gaussian_init(gen);
   }
 }
 
