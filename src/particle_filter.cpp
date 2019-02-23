@@ -21,7 +21,7 @@
 using std::string;
 using std::vector;
 
-
+std::default_random_engine gen;
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
@@ -33,7 +33,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    *   (and others in this file).
    */
   num_particles = 100;  // TODO: Set the number of particles
-  std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution for x, y, and theta
   std::normal_distribution<double> X_gaussian_init(x, std[0]);
@@ -63,7 +62,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
-  std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution noise for x, y, and theta
   std::normal_distribution<double> X_gaussian_init(0, std_pos[0]);
@@ -199,7 +197,6 @@ void ParticleFilter::resample() {
    */
   // Set of temp particles
   std::vector<Particle> temp_particles;
-  std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution noise for x, y, and theta
   std::uniform_int_distribution<int> Index_unidist(0, num_particles-1);
