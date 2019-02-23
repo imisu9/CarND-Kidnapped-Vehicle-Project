@@ -169,8 +169,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     for (int l = 0; l < transformed_obs.size(); ++l) {
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
+      int landmark_id = transformed_obs[l].id;
       vector<LandmarkObs>::iterator it = std::find_if(predictions.begin(), predictions.end(),
-                                                      [&transformed_obs[l]] (const LandmarkObs lm_ob) {return lm_ob.id == transformed_obs[l].id;});
+                                                      [&landmark_id] (const LandmarkObs lm_ob) {return lm_ob.id == landmark_id;});
       double p_x = it->x;
       double p_y = it->y;
       
