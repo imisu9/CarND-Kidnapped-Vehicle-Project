@@ -45,9 +45,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   for (int i = 0; i < num_particles; ++i) {
     Particle p;
     p.id = i;
-    p.x = X_gaussian_inint(gen);
-    p.y = Y_gaussian_inint(gen);
-    p.theta = Theta_gaussian_inint(gen);
+    p.x = X_gaussian_init(gen);
+    p.y = Y_gaussian_init(gen);
+    p.theta = Theta_gaussian_init(gen);
     p.weight = 1.0;
     
     particles.push_back(p);
@@ -78,7 +78,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     // add noise
     particles[i].x += X_gaussian_init(gen);
     // calculate prediction for y
-    particles[i].y += (velocity/yawrate) * 
+    particles[i].y += (velocity/yaw_rate) * 
                       (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate*delta_t));
     // add noise
     particles[i].y += Y_gaussian_init(gen);
@@ -172,8 +172,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       double t_ob_y = transformed_obs[l].y;
       vector<LandmarkObs>::iterator it = find(predictions.begin(), predictions.end(),
                                               boost::bind(&LandmarkObs::id, _1) == transformed_obs[l].id);
-      double p_x = *it->x;
-      double p_y = *it->y;
+      double p_x = it->x;
+      double p_y = it->y;
       
       temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1]) * 
                       exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) + 
