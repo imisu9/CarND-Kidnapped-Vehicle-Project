@@ -191,7 +191,29 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
-
+  // Set of temp particles
+  std::vector<Particle> temp_particles;
+  std::default_random_engine gen;
+  
+  // these lines create a normal (Gaussian) distribution noise for x, y, and theta
+  normal_distribution<int> Index_gaussian_init(0, num_particles-1);
+  int index = Index_gaussian_init(gen);
+  auto minmax_weight = std::minmax_element(particles.begin(), particles.end(),
+                                           [] (Particle const& lhs, Size const& rhs) {
+                                             return lhs.weight < rhs.weight;});
+  int max_weight = minmax_weight.second->weight;
+  double beta = 0;
+  normal_distribution<double> Beta_gaussian_init(0, max_weight);
+  
+  for (int i = 0; i < num_particles; ++i) {
+    beta += Beta_gaussian_init(gen) * 2;
+    while (beta > particles[index].weight) {
+      beta -= particles[index].weight;
+      index = (index + 1) % num_particles;
+    }
+    temp_particles.push_back(particles[index]);
+  }
+  particles = temp_particles;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
