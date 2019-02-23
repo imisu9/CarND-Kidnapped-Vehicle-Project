@@ -37,9 +37,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution for x, y, and theta
-  normal_distribution<double> X_gaussian_init(x, std[0]);
-  normal_distribution<double> Y_gaussian_init(y, std[1]);
-  normal_distribution<double> Theta_gaussian_init(theta, std[2]);
+  std::normal_distribution<double> X_gaussian_init(x, std[0]);
+  std::normal_distribution<double> Y_gaussian_init(y, std[1]);
+  std::normal_distribution<double> Theta_gaussian_init(theta, std[2]);
   
   // init particles
   for (int i = 0; i < num_particles; ++i) {
@@ -67,13 +67,13 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
   std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution noise for x, y, and theta
-  normal_distribution<double> X_gaussian_init(0, std_pos[0]);
-  normal_distribution<double> Y_gaussian_init(0, std_pos[1]);
-  normal_distribution<double> Theta_gaussian_init(0, std_pos[2]);
+  std::normal_distribution<double> X_gaussian_init(0, std_pos[0]);
+  std::normal_distribution<double> Y_gaussian_init(0, std_pos[1]);
+  std::normal_distribution<double> Theta_gaussian_init(0, std_pos[2]);
   
-  for (int i = 0; i < num_particle; ++i) {
+  for (int i = 0; i < num_particles; ++i) {
     // calculate prediction for x
-    particles[i].x += (velocity/yawrate) * 
+    particles[i].x += (velocity/yaw_rate) * 
                       (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta));
     // add noise
     particles[i].x += X_gaussian_init(gen);
@@ -97,10 +97,10 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-  double min_dist = numeric_limits<double>::max();;
+  double min_dist = std::numeric_limits<double>::max();;
   for (int i = 0; i < observations.size(); ++i) {
     for (int j = 0; j < predicted.size(); ++j) {
-      double curr_dist = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].j);
+      double curr_dist = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
       if (curr_dist < min_dist) {
         min_dist = curr_dist;
         observations[i].id = predicted[j].id;
@@ -167,13 +167,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
     // (assuming correlation between x and y is zero)
     double temp_weight = 1;
-    for (int l = 0; l < transfromed_obs.size(); ++l) {
+    for (int l = 0; l < transformed_obs.size(); ++l) {
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
       vector<LandmarkObs>::iterator it = find(predictions.begin(), predictions.end(),
                                               boost::bind(&LandmarkObs::id, _1) == transformed_obs[l].id);
-      double p_x = *it.x;
-      double p_y = *it.y;
+      double p_x = *it->x;
+      double p_y = *it->y;
       
       temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1]) * 
                       exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) + 
@@ -196,14 +196,14 @@ void ParticleFilter::resample() {
   std::default_random_engine gen;
   
   // these lines create a normal (Gaussian) distribution noise for x, y, and theta
-  normal_distribution<int> Index_gaussian_init(0, num_particles-1);
+  std::normal_distribution<int> Index_gaussian_init(0, num_particles-1);
   int index = Index_gaussian_init(gen);
   auto minmax_weight = std::minmax_element(particles.begin(), particles.end(),
                                            [] (Particle const& lhs, Size const& rhs) {
                                              return lhs.weight < rhs.weight;});
   int max_weight = minmax_weight.second->weight;
   double beta = 0;
-  normal_distribution<double> Beta_gaussian_init(0, max_weight);
+  std::normal_distribution<double> Beta_gaussian_init(0, max_weight);
   
   for (int i = 0; i < num_particles; ++i) {
     beta += Beta_gaussian_init(gen) * 2;
