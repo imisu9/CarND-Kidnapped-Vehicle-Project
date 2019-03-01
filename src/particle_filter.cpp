@@ -99,8 +99,8 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-  double min_dist = std::numeric_limits<double>::max();;
   for (unsigned i = 0; i < observations.size(); ++i) {
+    double min_dist = std::numeric_limits<double>::max();
     for (unsigned j = 0; j < predicted.size(); ++j) {
       double curr_dist = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
       if (curr_dist < min_dist) {
