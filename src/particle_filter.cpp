@@ -181,10 +181,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       std::cout << "p_x " << p_x << "\n";
       */
       
-      for (unsigned m = 0; m < preditions.size(); ++m) {
+      for (unsigned m = 0; m < predictions.size(); ++m) {
         if (predictions[m].id == landmark_id) {
-          p_x = predictions[m].x;
-          p_y = predictions[m].y;
+          double p_x = predictions[m].x;
+          double p_y = predictions[m].y;
         }
       }
       
