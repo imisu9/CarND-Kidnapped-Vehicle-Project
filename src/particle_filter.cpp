@@ -191,8 +191,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       
       temp_weight = (1/(2*M_PI*std_landmark[0]*std_landmark[1])) *
                      exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) +
-                                 pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
-                                 2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1])));
+                                 pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2)));
       if (temp_weight > 0) {
         particles[i].weight *= temp_weight;
       }
