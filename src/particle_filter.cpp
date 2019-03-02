@@ -169,6 +169,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
     // (assuming correlation between x and y is zero)
     double temp_weight = 1;
+    particles[i].weight = 1;
     for (unsigned l = 0; l < transformed_obs.size(); ++l) {
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
@@ -187,13 +188,15 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         }
       }
       
-      temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1]) * 
-                      exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) + 
-                                  pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
-                                  2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1]))));
+      temp_weight = (1/(2*M_PI*std_landmark[0]*std_landmark[1]) *
+                     exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) +
+                                 pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
+                                 2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1]))));
+      if (temp_weight != 0) {
+        // update the weight of i th particle using a bivariate Gaussian distribution
+        particles[i].weight * = temp_weight;
+      }
     }
-    // update the weight of i th particle using a bivariate Gaussian distribution
-    particles[i].weight = temp_weight;
   }
 }
 
