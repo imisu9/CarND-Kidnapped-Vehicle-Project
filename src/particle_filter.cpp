@@ -128,6 +128,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   and the following is a good resource for the actual equation to implement
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
+  double sum_weight = 0.0;
+  
   for (int i = 0; i < num_particles; ++i) {
     double pi_x = particles[i].x;
     double pi_y = particles[i].y;
@@ -168,7 +170,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
     // (assuming correlation between x and y is zero)
     double temp_weight = 1.0;
-    double sum_weight = 0.0;
     std::vector<int> associations;
     std::vector<double> sense_x;
     std::vector<double> sense_y;
