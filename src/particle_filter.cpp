@@ -131,9 +131,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     double pi_x = particles[i].x;
     double pi_y = particles[i].y;
     double pi_theta = particles[i].theta;
-    std::vector<int> associations(observations.size(), 0);
-    std::vector<double> sense_x(observations.size(), 0.0);
-    std::vector<double> sense_y(observations.size(), 0.0);
+    std::vector<int> associations;
+    std::vector<double> sense_x;
+    std::vector<double> sense_y;
     
     // create a vector for predicted landmark locations complying to the MAP's coordinate system.
     vector<LandmarkObs> predictions;
