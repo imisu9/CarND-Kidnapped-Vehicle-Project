@@ -189,17 +189,15 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         }
       }
       
-      temp_weight = (1/(2*M_PI*std_landmark[0]*std_landmark[1])) *
-                     exp((-1)*(pow(t_ob_x-p_x, 2)/2*pow(std_landmark[0], 2) +
-                                 pow(t_ob_y-p_y, 2)/2*pow(std_landmark[1], 2)));
-      if (temp_weight > 0) {
-        particles[i].weight *= temp_weight;
-      }
+      temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1])) *
+        exp((-1)*(pow(t_ob_x-p_x, 2)/2*pow(std_landmark[0], 2) +
+                  pow(t_ob_y-p_y, 2)/2*pow(std_landmark[1], 2)));
       associations.push_back(landmark_id);
       sense_x.push_back(t_ob_x);
       sense_y.push_back(t_ob_y);
     }
-    weights[i] = particles[i].weight;
+    particles[i].weight = temp_weight;
+    weights[i] = temp_weight;
     SetAssociations(particles[i], associations, sense_x, sense_y);
   }
 }
