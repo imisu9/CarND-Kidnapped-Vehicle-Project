@@ -193,12 +193,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                                   pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
                                   2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1]))));
       
-      //associations.push_back(landmark_id);
-      //sense_x.push_back(t_ob_x);
-      //sense_y.push_back(t_ob_y);
+      associations.push_back(landmark_id);
+      sense_x.push_back(t_ob_x);
+      sense_y.push_back(t_ob_y);
     }
     particles[i].weight = temp_weight;
-    //SetAssociations(particles[i], associations, sense_x, sense_y);
+    SetAssociations(particles[i], associations, sense_x, sense_y);
     //weights[i] = particles[i].weight;
   }
 }
