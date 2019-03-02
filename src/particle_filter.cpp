@@ -177,6 +177,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                                                       [&landmark_id] (const LandmarkObs lm_ob) {return lm_ob.id == landmark_id;});
       double p_x = it->x;
       double p_y = it->y;
+      std::cout << "p_x " << p_x << "\n";
       
       temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1]) * 
                       exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) + 
