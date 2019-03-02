@@ -156,8 +156,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     vector<LandmarkObs> transformed_obs;
     for (unsigned k = 0; k < observations.size(); ++k) {
       int t_obs_id = observations[k].id;
-      double t_obs_x = observations[k].x * cos(pi_theta) - observations[k].y * sin(pi_theta) + pi_x;
-      double t_obs_y = observations[k].x * sin(pi_theta) + observations[k].y * cos(pi_theta) + pi_y;
+      double t_obs_x = pi_x + (observations[k].x*cos(pi_theta)) - (observations[k].y*sin(pi_theta));
+      double t_obs_y = pi_y + (observations[k].x*sin(pi_theta)) + (observations[k].y*cos(pi_theta));
       
       transformed_obs.push_back(LandmarkObs{t_obs_id, t_obs_x, t_obs_y});
     }
