@@ -132,9 +132,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     double pi_x = particles[i].x;
     double pi_y = particles[i].y;
     double pi_theta = particles[i].theta;
-    std::vector<int> associations;
-    std::vector<double> sense_x;
-    std::vector<double> sense_y;
     
     // create a vector for predicted landmark locations complying to the MAP's coordinate system.
     vector<LandmarkObs> predictions;
@@ -170,7 +167,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // the formular was taken from wikipeida at
     // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
     // (assuming correlation between x and y is zero)
-    double temp_weight = 1;
+    double temp_weight = 1.0;
+    double sum_weight = 0.0;
+    std::vector<int> associations;
+    std::vector<double> sense_x;
+    std::vector<double> sense_y;
+    
     for (unsigned l = 0; l < transformed_obs.size(); ++l) {
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
@@ -197,8 +199,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       sense_y.push_back(t_ob_y);
     }
     particles[i].weight = temp_weight;
-    weights[i] = temp_weight;
+    sum_weight += temp_weight;
     SetAssociations(particles[i], associations, sense_x, sense_y);
+  }
+  
+  for (int n = 0; n < num_particles; ++n) {
+    particles[n].weight /= sum_weight;
+    weights[n] = particles[n].weight;
   }
 }
 
