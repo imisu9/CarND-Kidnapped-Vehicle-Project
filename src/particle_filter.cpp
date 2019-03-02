@@ -142,7 +142,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       
       // add j th landmark to predictions, 
       // only if it is within the sensor range from i th particle.
-      if (dist(pi_x, lmj_x, pi_y, lmj_y) <= sensor_range) {
+      if (dist(pi_x, pi_y, lmj_x, lmj_y) <= sensor_range) {
         predictions.push_back(LandmarkObs{lmj_id, lmj_x, lmj_y});
       }
     }
