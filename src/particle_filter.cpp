@@ -131,10 +131,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     double pi_x = particles[i].x;
     double pi_y = particles[i].y;
     double pi_theta = particles[i].theta;
+    std::vector<int> associations(observations.size(), 0);
+    std::vector<double> sense_x(observations.size(), 0.0);
+    std::vector<double> sense_y(observations.size(), 0.0);
     
     // create a vector for predicted landmark locations complying to the MAP's coordinate system.
     vector<LandmarkObs> predictions;
-    
     for (unsigned j = 0; j < map_landmarks.landmark_list.size(); ++j) {
       int lmj_id = map_landmarks.landmark_list[j].id_i;
       float lmj_x = map_landmarks.landmark_list[j].x_f;
@@ -151,7 +153,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // from the VEHICLE'S coordinate system to the MAP's coordinate system
     // by both rotation and translation
     vector<LandmarkObs> transformed_obs;
-    
     for (unsigned k = 0; k < observations.size(); ++k) {
       int t_obs_id = observations[k].id;
       double t_obs_x = observations[k].x * cos(pi_theta) - observations[k].y * sin(pi_theta) + pi_x;
@@ -169,7 +170,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // https://en.wikipedia.org/wiki/Multivariate_normal_distribution.
     // (assuming correlation between x and y is zero)
     double temp_weight = 1;
-    particles[i].weight = 1;
     for (unsigned l = 0; l < transformed_obs.size(); ++l) {
       double t_ob_x = transformed_obs[l].x;
       double t_ob_y = transformed_obs[l].y;
@@ -180,23 +180,22 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       */
       double p_x = 0.0;
       double p_y = 0.0;
-      
       for (unsigned m = 0; m < predictions.size(); ++m) {
         if (predictions[m].id == landmark_id) {
           p_x = predictions[m].x;
           p_y = predictions[m].y;
+          break;
         }
       }
       
-      temp_weight = (1/(2*M_PI*std_landmark[0]*std_landmark[1]) *
-                     exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) +
-                                 pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
-                                 2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1]))));
-      if (temp_weight != 0) {
-        // update the weight of i th particle using a bivariate Gaussian distribution
-        particles[i].weight *= temp_weight;
-      }
+      temp_weight *= (1/(2*M_PI*std_landmark[0]*std_landmark[1]) *
+                      exp((-1/2)*(pow(t_ob_x-p_x, 2)/pow(std_landmark[0], 2) +
+                                  pow(t_ob_y-p_y, 2)/pow(std_landmark[1], 2) -
+                                  2*(t_ob_x-p_x)*(t_ob_y-p_y)/(std_landmark[0]*std_landmark[1]))));
     }
+    particles[i].weight = temp_weight;
+    SetAssociations(particles[i], associations, sense_x, sense_y);
+    weights[i].push_back(particles[i].weight);
   }
 }
 
