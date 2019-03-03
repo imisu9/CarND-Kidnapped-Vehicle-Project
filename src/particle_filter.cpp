@@ -32,7 +32,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 100;  // TODO: Set the number of particles
+  num_particles = 20;  // TODO: Set the number of particles
   
   // these lines create a normal (Gaussian) distribution for x, y, and theta
   std::normal_distribution<double> X_gaussian_init(x, std[0]);
