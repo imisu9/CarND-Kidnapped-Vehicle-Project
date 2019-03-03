@@ -204,6 +204,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     SetAssociations(particles[i], associations, sense_x, sense_y);
   }
   
+  // normalize weight by its total sum
   for (int n = 0; n < num_particles; ++n) {
     particles[n].weight /= sum_weight;
     weights[n] = particles[n].weight;
